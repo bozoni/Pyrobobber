@@ -1,0 +1,11 @@
+A(PB0)	*
+SCK(PB2) *
+SWD(PB6) 	
+DBGLED(PB3)
+
+B(PA0); *
+MISO(PA1) *
+SWC(PA2)
+LNSS(PA5) *
+LRES(PA6) *
+MOSI(PA7) *
