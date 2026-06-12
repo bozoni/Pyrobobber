@@ -237,7 +237,6 @@ uint8_t LORALIB_LORA_ReceivePacket(uint8_t *buffer) {
 	LORALIB_LORA_WriteReg(0x0D, fifo_addr);
   LORALIB_LORA_ReadFifo(buffer,len);
 	
-	LORALIB_LORA_ReadReg(len);
 	LORALIB_LORA_WriteReg(0x12, 0xFF);
 	
 	return len;
