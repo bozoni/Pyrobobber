@@ -217,3 +217,28 @@ void LORALIB_LORA_SendPacket(uint8_t *data, uint8_t len)
 	// ?????????? ? ????? Standby
 	LORALIB_LORA_WriteReg(0x01, 0x81); // RegOpMode -> LoRa + Standby	
 }
+
+uint8_t* LORALIB_LORA_ReadFifo(uint8_t len) {
+		uint8_t buffer[len];
+    LORALIB_LORA_Select();
+    LORALIB_SPI_Data(0x00); // ????? FIFO (0x00) ??? ???? ?????? (??????)
+    for (uint8_t i = 0; i < len; i++) {
+        buffer[i] = LORALIB_SPI_Data(0x00);
+    }
+    LORALIB_LORA_Deselect();
+		return buffer;
+}
+
+uint8_t LORALIB_LORA_ReceivePacket() {
+	LORALIB_LORA_WriteReg(0x01, 0x85);
+	
+	while ((LORALIB_LORA_ReadReg(0x12) & 0x40) == 0);
+	
+	uint8_t len = LORALIB_LORA_ReadReg(0x13);
+	uint8_t fifo_addr = LORALIB_LORA_ReadReg(0x10);
+	
+	LORALIB_LORA_ReadReg(len);
+	LORALIB_LORA_WriteReg(0x12, 0xFF);
+	
+	return len;
+}
