@@ -24,8 +24,12 @@ int main(void)
 	
 	LORALIB_LORA_Init();
 	LORALIB_LORA_SendPacket(mes, 1);
+
+	
 	APP_GPIO_Init();
-	APP_ConfigureExti();
+	APP_ConfigureExti(
+	
+	);
   /* Peripheral initialization */
   
   /* Enable SPI */
