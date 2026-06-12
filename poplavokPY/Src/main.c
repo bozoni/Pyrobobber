@@ -38,7 +38,7 @@ int main(void)
   /* Infinite loop */
   while (1)
   {
-		mes[0] = cnt;
+		LORALIB_LORA_ReceivePacket(mes);
 		LORALIB_LORA_SendPacket(mes, 1);
 		EXTI_Flag = 0;
 		HAL_Delay(200);
