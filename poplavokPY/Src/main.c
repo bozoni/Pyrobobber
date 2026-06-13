@@ -17,31 +17,24 @@ static void APP_GPIO_Init();
   */
 int main(void)
 {
-	uint8_t mes[] = {0xAC};
+	uint8_t mes[300] = {0xAB, 0xBA};
   /* MCU initialization */
   HAL_Init();
   APP_SystemClockConfig();
 	
 	LORALIB_LORA_Init();
-	LORALIB_LORA_SendPacket(mes, 1);
-
 	
 	APP_GPIO_Init();
-	APP_ConfigureExti(
-	
-	);
-  /* Peripheral initialization */
-  
-  /* Enable SPI */
 
+
+  /* Peripheral initialization */
   
   /* Infinite loop */
   while (1)
   {
-		LORALIB_LORA_ReceivePacket(mes);
-		LORALIB_LORA_SendPacket(mes, 1);
-		EXTI_Flag = 0;
-		HAL_Delay(200);
+		if(LORALIB_LORA_ReceivePacket(mes) != 0)
+			LORALIB_LORA_SendPacket(mes, 255);
+		else {mes[0] = 0xBA; LORALIB_LORA_SendPacket(mes, 1);}
   }
 }
 
