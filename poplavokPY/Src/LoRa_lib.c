@@ -232,3 +232,9 @@ uint8_t LORALIB_LORA_ReceivePacket(uint8_t *buffer) {
     LORALIB_LORA_WriteReg(0x12, 0xFF);
     return len;
 }
+
+void LORALIB_LORA_ChangePassword(uint8_t password){
+	LORALIB_LORA_Select();
+	LORALIB_LORA_WriteReg(0x39, password);
+	LORALIB_LORA_Deselect();
+}

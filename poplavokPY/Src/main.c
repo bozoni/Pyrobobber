@@ -10,6 +10,7 @@ void APP_ErrorHandler(void);
 static void APP_ConfigureExti(void); 
 static void APP_GPIO_Init();
 
+uint8_t id = 2;
 
 /**
   * @brief  Main program.
@@ -17,7 +18,7 @@ static void APP_GPIO_Init();
   */
 int main(void)
 {
-	uint8_t mes[300] = {0xAB, 0xBA};
+	uint8_t mes[255] = {0xAB, 0xBA};
   /* MCU initialization */
   HAL_Init();
   APP_SystemClockConfig();
@@ -25,16 +26,22 @@ int main(void)
 	LORALIB_LORA_Init();
 	
 	APP_GPIO_Init();
-
+	LORALIB_LORA_ChangePassword(id-1);
 
   /* Peripheral initialization */
   
   /* Infinite loop */
   while (1)
   {
-		if(LORALIB_LORA_ReceivePacket(mes) != 0)
+		LORALIB_LORA_ChangePassword(id-1);
+		mes[id-2] = cnt;
+		if(LORALIB_LORA_ReceivePacket(mes) != 0){
 			LORALIB_LORA_SendPacket(mes, 255);
-		else {mes[0] = 0xBA; LORALIB_LORA_SendPacket(mes, 1);}
+		}
+		else  {
+			mes[id-3] = 0xFF;
+			LORALIB_LORA_SendPacket(mes, 255);
+		}
   }
 }
 
