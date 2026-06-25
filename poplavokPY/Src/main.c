@@ -4,13 +4,41 @@
 /* Private variables ---------------------------------------------------------*/
 extern char cnt;
 extern _Bool EXTI_Flag;
+uint8_t mes[255] = {0xAB, 0xBA};
 /* Private function prototypes -----------------------------------------------*/
 static void APP_SystemClockConfig(void);
 void APP_ErrorHandler(void);
 static void APP_ConfigureExti(void); 
 static void APP_GPIO_Init();
+static void APP_Robbober_cicl();
 
-uint8_t id = 2;
+#define id 2
+#define scnd  //ACHTUNG!!! Comment if id != 2
+
+
+#ifdef scnd 
+static void APP_Robbober_cicl()       											//if id == 2 Send enc value every 500 ms
+{
+	mes[0] = cnt;
+	LORALIB_LORA_SendPacket(mes, 1);
+	HAL_Delay(500);
+}
+
+#else
+static void APP_Robbober_cicl()															//else:
+{
+	while(!LORALIB_LORA_ReceivePacket(mes)) HAL_Delay(100);		//wait for message from previos modules
+	LORALIB_LORA_ChangePassword(id);													//change synchword for transmission
+	mes[id-1] = cnt;																					//
+	LORALIB_LORA_SendPacket(mes, id-1);												//send recieved values and self cnt value
+	LORALIB_LORA_ChangePassword(id - 1);											//change synchword for reseption
+}
+#endif
+
+/*
+transmit synchword {id} 
+recieve synchword {id - 1}
+*/
 
 /**
   * @brief  Main program.
@@ -18,30 +46,22 @@ uint8_t id = 2;
   */
 int main(void)
 {
-	uint8_t mes[255] = {0xAB, 0xBA};
-  /* MCU initialization */
+
+	
   HAL_Init();
   APP_SystemClockConfig();
-	
 	LORALIB_LORA_Init();
-	
 	APP_GPIO_Init();
-	LORALIB_LORA_ChangePassword(id-1);
-
-  /* Peripheral initialization */
-  
-  /* Infinite loop */
+	
+	#ifdef scnd
+		LORALIB_LORA_ChangePassword(id);
+	#else
+		LORALIB_LORA_ChangePassword(id-1);
+	#endif
+	
   while (1)
   {
-		LORALIB_LORA_ChangePassword(id-1);
-		mes[id-2] = cnt;
-		if(LORALIB_LORA_ReceivePacket(mes) != 0){
-			LORALIB_LORA_SendPacket(mes, 255);
-		}
-		else  {
-			mes[id-3] = 0xFF;
-			LORALIB_LORA_SendPacket(mes, 255);
-		}
+		APP_Robbober_cicl();
   }
 }
 
