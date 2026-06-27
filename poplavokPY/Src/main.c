@@ -11,9 +11,10 @@ void APP_ErrorHandler(void);
 static void APP_ConfigureExti(void); 
 static void APP_GPIO_Init();
 static void APP_Robbober_cicl();
+void APP_GPIO_Blink();
 
-#define id 2
-#define scnd  //ACHTUNG!!! Comment if id != 2
+#define id 3
+//#define scnd  //ACHTUNG!!! Comment if id != 2
 
 
 #ifdef scnd 
@@ -21,7 +22,8 @@ static void APP_Robbober_cicl()       											//if id == 2 Send enc value eve
 {
 	mes[0] = cnt;
 	LORALIB_LORA_SendPacket(mes, 1);
-	HAL_Delay(500);
+	APP_GPIO_Blink();
+	HAL_Delay(1000);
 }
 
 #else
@@ -29,7 +31,7 @@ static void APP_Robbober_cicl()															//else:
 {
 	while(!LORALIB_LORA_ReceivePacket(mes)) HAL_Delay(100);		//wait for message from previos modules
 	LORALIB_LORA_ChangePassword(id);													//change synchword for transmission
-	mes[id-1] = cnt;																					//
+	mes[id-2] = cnt;																					//
 	LORALIB_LORA_SendPacket(mes, id-1);												//send recieved values and self cnt value
 	LORALIB_LORA_ChangePassword(id - 1);											//change synchword for reseption
 }
@@ -52,7 +54,13 @@ int main(void)
   APP_SystemClockConfig();
 	LORALIB_LORA_Init();
 	APP_GPIO_Init();
-	
+	for(int i = 0; i < 5; i++)
+	{
+		APP_GPIO_Blink();
+		HAL_Delay(500);
+	}
+	LORALIB_LORA_ChangePassword(id);
+	LORALIB_LORA_SendPacket(mes, 1);
 	#ifdef scnd
 		LORALIB_LORA_ChangePassword(id);
 	#else
@@ -130,6 +138,18 @@ static void APP_GPIO_Init()
 	gpio_init.Pull = GPIO_PULLUP;        // ???????? ?????????? ???????? ? ???????
 	gpio_init.Speed = GPIO_SPEED_FREQ_HIGH;
 	HAL_GPIO_Init(GPIOB, &gpio_init);
+	gpio_init.Pin = GPIO_PIN_3;          // ???????????, ?????? ?? PA0
+	gpio_init.Mode = GPIO_MODE_OUTPUT_PP;   // ????? ?????
+	gpio_init.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOB, &gpio_init);
+	
+}
+
+void APP_GPIO_Blink()
+{
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET);
+	HAL_Delay(100);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
 }
 
 void APP_ErrorHandler(void)

@@ -55,8 +55,8 @@ static void LORALIB_SPI_Init()
   Spi1Handle.Instance                       = SPI1;                       /* SPI1 */
   //Spi1Handle.Init.BaudRatePrescaler			  = SPI_BAUDRATEPRESCALER_2;    //SPI_BAUDRATEPRESCALER_;  /* 256 frequency division */
   Spi1Handle.Init.Direction   		      		= SPI_DIRECTION_2LINES;       /* full duplex */
-	Spi1Handle.Init.CLKPolarity 							= SPI_POLARITY_HIGH;          /* High clock polarity */
-	Spi1Handle.Init.CLKPhase    							= SPI_PHASE_2EDGE;            /* Data sampling on second clock edge */
+	Spi1Handle.Init.CLKPolarity 							= SPI_POLARITY_LOW;          /* High clock polarity */
+	Spi1Handle.Init.CLKPhase    							= SPI_PHASE_1EDGE;            /* Data sampling on second clock edge */
   Spi1Handle.Init.DataSize    		  	 	    = SPI_DATASIZE_8BIT;          /* SPI data length is 8 bits */
   Spi1Handle.Init.FirstBit      		     		= SPI_FIRSTBIT_MSB;           /* Send MSB first */
   Spi1Handle.Init.NSS              				  = SPI_NSS_SOFT;      				  /* NSS software mode (hardware mode) */
